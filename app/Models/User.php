@@ -38,9 +38,5 @@ class User extends Authenticatable
         return $this->hasOne(Countries::class, 'iso_code', 'iso_code_country');
     }
 
-    public function setPasswordAttribute($password)
-    {
-        $this->attributes['password'] = bcrypt($password);
-    }
 
 }

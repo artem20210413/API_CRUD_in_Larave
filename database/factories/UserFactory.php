@@ -21,8 +21,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->email(),
-            'password' => bcrypt('password'),
-            'verified' => fake()->boolean(),
+            'verified' => fake()->date(),
             'iso_code_country' => fake()->randomElement($isoCodes),
         ];
     }
