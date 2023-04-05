@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use App\Services\Email\EmailService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -17,7 +18,7 @@ class ProcessPodcast implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public string $email, public string $token)
+    public function __construct(public User $user)
     {
         //
     }
@@ -27,6 +28,6 @@ class ProcessPodcast implements ShouldQueue
      */
     public function handle(EmailService $emailService): void
     {
-       $emailService->sendTokenMail($this->email, $this->token);
+        $emailService->createdGuidAndSendEmailUser($this->user);
     }
 }

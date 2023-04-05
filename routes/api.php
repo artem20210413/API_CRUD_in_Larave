@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/sanctum/token', [AuthController::class, 'sanctumToken']);
+Route::get('/users/verified/{guid}', [AuthController::class, 'usersVerified']);
+Route::post('/users/created', [AuthController::class, 'usersCreated']);
 
 Route::get('/continents', [ContinentsController::class, 'all']);
 
