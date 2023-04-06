@@ -5,10 +5,13 @@ namespace App\Services\Auth;
 
 
 use App\Http\Requests\UsersCreatedRequest;
+use App\Http\Resources\UsersResource;
 use App\Jobs\ProcessPodcast;
 use App\Models\User;
 use App\Models\UserVerifiedUrl;
+use App\Services\Email\EmailService;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Validation\ValidationException;
@@ -19,6 +22,28 @@ class UsersService
     {
     }
 
+    public function all(\Illuminate\Http\Request $requests)
+    {
+        $name = $requests->name ? $requests->name : "";
+        $email = $requests->email ? $requests->email : "";
+        $iso = $requests->iso;
+        $verified = $requests->verified;
+
+        $users = User::where('name', 'LIKE', "%$name%")
+            ->where('email', 'LIKE', "%$email%");
+
+        if ($iso) {
+            $users->where('iso_code_country', $iso);
+        }
+
+        if ($verified === 'false') {
+            $users->whereNull('verified');
+        } else if ($verified === 'true') {
+            $users->whereNotNull('verified');
+        }
+
+        return UsersResource::collection($users->get());
+    }
 
     public function usersCreated(UsersCreatedRequest $requests)
     {
@@ -30,6 +55,7 @@ class UsersService
             $name = $request['name'];
             $iso_code_country = $request['iso_code_country'];
             $user = $this->createdUser($email, $name, $iso_code_country);
+            (new EmailService())->createdGuidAndSendEmailUser($user);
 
             Queue::connection('database')->push(ProcessPodcast::class, $user);
         }
@@ -40,21 +66,19 @@ class UsersService
     public function usersVerified(string $guid)
     {
         $userVerifiedUrl = $this->checkGuid($guid);
-        $user = User::find($userVerifiedUrl->id);
-
+        $user = User::find($userVerifiedUrl->user_id);
         $token = $user->createToken('not found')->plainTextToken;
-        $user->verified = 1;
+        $user->verified = new \DateTime();
         $user->save();
 
         return $token;
     }
 
-
     public function checkGuid(string $guid): UserVerifiedUrl
     {
-        $userVerifiedUrl = UserVerifiedUrl::where('guid', $guid)->get();
-
+        $userVerifiedUrl = UserVerifiedUrl::where('guid', $guid)->first();
         if (!$userVerifiedUrl || $userVerifiedUrl->action === 0) {
+
             throw ValidationException::withMessages([
                 'guid' => ['Not valid'],
             ]);
@@ -102,4 +126,15 @@ class UsersService
         return $user;
     }
 
+
+    public function getUser()
+    {
+        return Auth::user();
+    }
+
+    public function userDelete($user)
+    {
+        User::destroy($user->id);
+        return response()->json('successful removal');
+    }
 }

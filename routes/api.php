@@ -21,9 +21,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/sanctum/token', [AuthController::class, 'sanctumToken']);
-Route::get('/users/verified/{guid}', [AuthController::class, 'usersVerified']);
 Route::post('/users/created', [AuthController::class, 'usersCreated']);
+Route::get('/users/verified/{guid}', [AuthController::class, 'usersVerified']);
 
-Route::get('/continents', [ContinentsController::class, 'all']);
+//Route::middleware('auth:sanctum')->get('/continents', [ContinentsController::class, 'all']);//->middleware('auth.token');
 
+
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::delete('/users/delete', [AuthController::class, 'userDelete']);
+
+
+    Route::get('/continents', [ContinentsController::class, 'all']);
+});
+
+Route::get('/users', [AuthController::class, 'all']);

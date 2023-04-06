@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100);
             $table->string('email', 100)->unique();
-            $table->date('verified')->nullable();
+            $table->dateTime('verified')->nullable();
             $table->string('iso_code_country', 2);
             $table->timestamps();
 
