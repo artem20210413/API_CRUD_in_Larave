@@ -31,8 +31,16 @@ Route::get('/users/verified/{guid}', [AuthController::class, 'usersVerified']);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/users/delete', [AuthController::class, 'userDelete']);
 
+    Route::post('/projects', [\App\Http\Controllers\Entities\ProjectsController::class, 'create']);
+    Route::post('/projects/link ', [\App\Http\Controllers\Entities\ProjectsController::class, 'link']);
+    Route::delete('/projects ', [\App\Http\Controllers\Entities\ProjectsController::class, 'destroy']);
+
+    Route::post('/labels ', [\App\Http\Controllers\Entities\LabelsController::class, 'create']);
+    Route::post('/labels/link ', [\App\Http\Controllers\Entities\LabelsController::class, 'link']);
+    Route::delete('/labels ', [\App\Http\Controllers\Entities\LabelsController::class, 'destroy']);
 
     Route::get('/continents', [ContinentsController::class, 'all']);
 });
 
+Route::get('/projects ', [\App\Http\Controllers\Entities\ProjectsController::class, 'list']);
 Route::get('/users', [AuthController::class, 'all']);

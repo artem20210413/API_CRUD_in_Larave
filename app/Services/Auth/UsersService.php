@@ -22,6 +22,11 @@ class UsersService
     {
     }
 
+    public function getUser()
+    {
+        return Auth::user();
+    }
+
     public function all(\Illuminate\Http\Request $requests)
     {
         $name = $requests->name ? $requests->name : "";
@@ -59,7 +64,6 @@ class UsersService
 
             Queue::connection('database')->push(ProcessPodcast::class, $user);
         }
-
         return 'Verification emails added to the queue';
     }
 
@@ -126,11 +130,6 @@ class UsersService
         return $user;
     }
 
-
-    public function getUser()
-    {
-        return Auth::user();
-    }
 
     public function userDelete($user)
     {
