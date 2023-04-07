@@ -21,6 +21,11 @@ class LabelsService
         $this->projectsService = new ProjectsService();
     }
 
+    public function list($request)
+    {
+        return Label::all();
+    }
+
     public function getIdAndCreate($user, array $labels)
     {
         $kays = [];

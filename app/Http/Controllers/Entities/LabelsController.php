@@ -25,6 +25,7 @@ class LabelsController extends Controller
         $labelsService->createArray($user, $labelsRequest->only('Labels')['Labels']);
         return 'success';
     }
+
     public function destroy(LabelsDestroyRequest $labelsRequest, LabelsService $labelsService, UsersService $usersService)
     {
         $user = $usersService->getUser();
@@ -36,6 +37,11 @@ class LabelsController extends Controller
     {
         $labelsService->linkProjects($labelsRequest);
         return 'success';
+    }
+
+    public function list(Request $request, LabelsService $labelsService)
+    {
+        return $labelsService->list($request);
     }
 
 }
